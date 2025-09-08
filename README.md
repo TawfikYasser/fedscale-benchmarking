@@ -17,19 +17,33 @@ cd FedScale
 Create a `setup.sh` file with the following contents:
 
 ```bash
-#!/bin/bash
-cd "$(dirname "$0")"
+cd FedScale
 
+# Please replace ~/.bashrc with ~/.bash_profile for MacOS
 FEDSCALE_HOME=$(pwd)
-echo "export FEDSCALE_HOME=$(pwd)" >> ~/.bashrc
-echo "alias fedscale='bash $FEDSCALE_HOME/fedscale.sh'" >> ~/.bashrc
-
+echo export FEDSCALE_HOME=$(pwd) >> ~/.bashrc 
+echo alias fedscale=\'bash $FEDSCALE_HOME/fedscale.sh\' >> ~/.bashrc 
 conda init bash
-source ~/.bashrc
+. ~/.bashrc
 
+# Update package list
+sudo apt update
+
+# Install OpenSSH server
+sudo apt install -y openssh-server
+
+# Start the SSH service
+sudo systemctl start ssh
+
+# Enable SSH to start automatically on boot
+sudo systemctl enable ssh
+
+# Check if SSH is now running
+sudo systemctl status ssh
+
+# Create and activate FedScale environment
 conda env create -f environment.yml
 conda activate fedscale
-
 pip install -e .
 ```
 
@@ -47,7 +61,7 @@ Modify your **config file** (e.g., `benchmark/configs/femnist/conf.yml`) before 
 ```yaml
 num_participants: 10
 rounds: 500
-use_cuda: True
+use_cuda: False
 ```
 
 ---
@@ -90,6 +104,6 @@ python driver.py start <conf>
 ## ✅ Summary
 
 1. Setup environment with `setup.sh`.  
-2. Edit configs (`num_participants=10`, `rounds=500`, `use_cuda=True`).  
+2. Edit configs (`num_participants=10`, `rounds=500`, `use_cuda=False`).  
 3. Download dataset.  
 4. Run with either cluster mode or local mode.  
